@@ -1,0 +1,12 @@
+@page
+{
+	size: portrait;
+	margin: 2cm;
+	widows: 4; orphans: 4;
+}
+
+body
+{
+	font-family: Arial Narrow, Helvetica, sans-serif;
+	font-size: 12pt;
+}
