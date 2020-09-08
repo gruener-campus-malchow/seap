@@ -2,6 +2,7 @@
 /*
  * Created 12.07.2007
  * Recreated 25.02.2011
+ * Recreated 08.09.2020
  * Created by alex  - baldauf@gruener-campus-malchow.de
  * 
  * For "SEAP" - Seminar Austausch Projekt
@@ -12,8 +13,8 @@
  //Constants
 	//HTML
 		 $Title="It is not shure that it is a pod - maybe not";
-		 $Header= '<?xml version="1.0" encoding="cp1252"?>' ."\n".
-				'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">' ."\n".
+		 $Header= '<!doctype html>' ."\n".
+				'<html lang="de">' ."\n".
 				'<head>'."\n".
 				'<title>'.$Title.'</title>' ."\n".
 				'<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/screen.css" >
@@ -26,44 +27,25 @@
 		 //$pathspacer='\\'; // WINDOWS Pathseperator
 		 $datapath='data_sfdoifdngcflaeioweitr0q9firhefbhy';
 		 $path=".".$pathspacer.$datapath.$pathspacer;
-	//URL
-		 $url= "seap_leoputer_release";
-	//FTP
-		 $ftp_server='leoputer.beispiel.net';
-		 $ftp_user_name='nicht richtiger name';
-		 $ftp_password='1234';
-		 $ftp_root_file='/';
+	
 	//login
-		$secret_pwd='1234';
+		$secret_pwd='****';
  
- //functions
+//functions
  
- function start_FTP_connection($server,$name,$password)
- {
-	 // Verbindung aufbauen
-		$connection = ftp_connect($server);
-
-		// Login mit Benutzername und Passwort
-		$login_result = ftp_login($connection, $name, $password);
-
-		// Verbindung 黚erpr黤en
-		if ((!$connection) || (!$login_result)) {
-			echo "FTP-Verbindung ist fehlgeschlagen!";
-			echo "Verbindungsaufbau zu $server mit Benutzername $name versucht.";
-			exit;
-		} 
-		return $connection;
- }
  
 // Neues Projektverzeichnis erstellen
-	if($_POST[newProject]!='')
+	if(isset($_POST[newProject]))
 	{
 		// Verbindung aufbauen
-		$conn_id = start_FTP_connection($ftp_server,$ftp_user_name,$ftp_password);
+		//$conn_id = start_FTP_connection($ftp_server,$ftp_user_name,$ftp_password);
 		//Verzeichnis auf Server erstellen
-		ftp_mkdir($conn_id,$ftp_root_file.$datapath.'/'.$_POST[newProject]);
+		if($_POST[newProject_PW] === '0104')
+		{
+    		mkdir('./'.$datapath.'/'.$_POST[newProject]);
+    	}
 		// Verbindung schlie遝n
-		ftp_close($conn_id);
+		//ftp_close($conn_id);
 	}
 
  
@@ -103,7 +85,7 @@
 			 if ($somethinguploaded)
 			 {
 				 // Verbindung aufbauen
-				$conn_id = start_FTP_connection($ftp_server,$ftp_user_name,$ftp_password);
+				//$conn_id = start_FTP_connection($ftp_server,$ftp_user_name,$ftp_password);
 
 				// Datei hochladen
 				$Upload_names=array_keys($_FILES);
@@ -111,20 +93,27 @@
 				{		
 					if($_FILES[$UploadName][size]>0)
 					{
-						$target=$ftp_root_file.$datapath.'/'.$UploadName.'/'.$_FILES[$UploadName][name];
-						$upload = ftp_put($conn_id, $target, $_FILES[$UploadName][tmp_name], FTP_BINARY);
-						// Upload 黚erpr黤en
-						if (!$upload) {
-							$UploadMessage[$UploadName]="FTP-Upload ist fehlgeschlagen!";
-						} else {
-							$UploadMessage[$UploadName]= "Datei <b>".$_FILES[$UploadName][name]."</b> auf Server <b>$ftp_server</b> hochgeladen";
-						
-						}
+					
+					    $uploaddir = './'.$datapath.'/'.$UploadName.'/';
+                        $uploadfile = $uploaddir . basename(urlencode($_FILES[$UploadName]['name']));
+
+                        echo '<pre>';
+                        if (move_uploaded_file($_FILES[$UploadName]['tmp_name'], $uploadfile)) {
+                            echo "Datei ist valide und wurde erfolgreich hochgeladen.\n<br>";
+                            //echo "look for: ".$uploadfile;
+                            //print_r($_FILES);
+                        } else {
+                            echo "Möglicherweise eine Dateiupload-Attacke!\n";
+                        }
+
+					
+					
+					
 					}
 				}
 				
 				// Verbindung schlie遝n
-				ftp_close($conn_id);
+		
 			 }
 			 
 		
@@ -136,7 +125,7 @@
 				{
 					if (is_file($path.$pathspacer.$thema.$pathspacer.$file))
 					{
-						$HTML.='<b>'.$file.'</b> <a href="'.$url.'/'.$datapath.'/'.$thema.'/'.$file.'">benutzen</a><br />';
+						$HTML.='<b>'.$file.'</b> <a href="./'.$datapath.'/'.$thema.'/'.urlencode($file).'">benutzen</a><br />';
 					}
 				}
 				$HTML.='<br />
@@ -155,6 +144,7 @@
 					Niemals (!!!) Leerzeichen oder Sonderzeichen benutzen.
 					<br />
 					<input name="newProject" type="text" size="51" maxlength="50">
+					<input name="newProject_PW" type="password" size="4" maxlength="4">
 					<input type="submit" value="Neues Projekt erstellen">
 					</p>';
 			echo $HTML;
