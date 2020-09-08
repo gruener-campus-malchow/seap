@@ -10,9 +10,11 @@
  
  session_start(); 
  
+ require_once('config.php');
+ 
  //Constants
 	//HTML
-		 $Title="It is not shure that it is a pod - maybe not";
+
 		 $Header= '<!doctype html>' ."\n".
 				'<html lang="de">' ."\n".
 				'<head>'."\n".
@@ -22,14 +24,7 @@
 				'</head>' ."\n".
 				'<body><form action="index.php" method="POST" enctype="multipart/form-data">'."\n\n\n";
 		 $Foot='</form></body></html>';
-	//Pfade
-		 $pathspacer='/'; //UNIX Pathseperator
-		 //$pathspacer='\\'; // WINDOWS Pathseperator
-		 $datapath='data_sfdoifdngcflaeioweitr0q9firhefbhy';
-		 $path=".".$pathspacer.$datapath.$pathspacer;
 	
-	//login
-		$secret_pwd='****';
  
 //functions
  
@@ -40,7 +35,7 @@
 		// Verbindung aufbauen
 		//$conn_id = start_FTP_connection($ftp_server,$ftp_user_name,$ftp_password);
 		//Verzeichnis auf Server erstellen
-		if($_POST[newProject_PW] === '0104')
+		if($_POST[newProject_PW] === $config['newProject_PW'])
 		{
     		mkdir('./'.$datapath.'/'.$_POST[newProject]);
     	}
